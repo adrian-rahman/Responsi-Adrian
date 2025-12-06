@@ -124,9 +124,15 @@
       color: black;
   }
   
+  .light-mode .card {
+    background: white;
+    border: 1px solid #ddd;
+    color: black;
+  }
+
   .light-mode #question-box {
       background-color: white;
-      color: white;
+      color: black;
       border-color: black;
   }
   
@@ -147,13 +153,65 @@
       color: white !important;
   }
 
+  /* ======== SLIDER TOGGLE ======== */
+.switch {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 26px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #444; /* dark */
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #ccc; /* light */
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
 </style>
 </head>
 <body>
-  <button id="theme-toggle">🌙 Dark Mode</button>
 <header>
   <h1>Kuis Kalkulus</h1>
   <p class="lead">Pilih jawaban untuk setiap soal, lalu tekan <strong>Submit All</strong></p>
+  <label class="switch">
+        <input type="checkbox" id="modeToggle">
+        <span class="slider"></span>
+  </label>
+
 </header>
 
 <main class="wrap">
@@ -412,21 +470,15 @@ window.addEventListener('load', () => {
   if (window.MathJax && MathJax.typeset) MathJax.typeset();
 });
 
-const modeBtn = document.getElementById("modeToggle");
+const modeToggle = document.getElementById("modeToggle");
 
-modeBtn.addEventListener("click", function () {
+modeToggle.addEventListener("change", function () {
     document.body.classList.toggle("light-mode");
-
-    if (document.body.classList.contains("light-mode")) {
-        modeBtn.textContent = "Dark Mode";
-    } else {
-        modeBtn.textContent = "Light Mode";
-    }
 });
+
+
+
 
 </script>
 </body>
 </html>
-
-
-
