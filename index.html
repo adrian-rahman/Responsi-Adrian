@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kuis Kalkulus – Adrian</title>
+
+<!-- MathJax for LaTeX -->
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 <style>
     body {
         background: #0d1117;
@@ -86,7 +90,7 @@
         </div>
         <button onclick="showExplanation('exp1')">Lihat Penjelasan</button>
         <div id="exp1" class="explanation">
-            Diberikan \( y = x^{f(x)} \). Ambil logaritma: 
+            Ambil logaritma:  
             \( \ln y = f(x)\ln x \).  
             Turunkan:  
             \( \frac{y'}{y} = f'(x)\ln x + \frac{f(x)}{x} \).  
@@ -107,7 +111,7 @@
         </div>
         <button onclick="showExplanation('exp2')">Lihat Penjelasan</button>
         <div id="exp2" class="explanation">
-            Fungsi dan inversnya selalu simetris terhadap garis \( y = x \).  
+            Grafik \( f \) dan \( f^{-1} \) selalu simetris terhadap garis \( y=x \).  
             Jika \( (a,b) \in f \), maka \( (b,a) \in f^{-1} \).
         </div>
     </div>
@@ -129,7 +133,7 @@
             II benar (domain seluruh real).  
             III salah (range adalah (0, π)).  
             IV benar (arccot 0 = π/2).  
-            Jadi jawaban benar: II dan IV.
+            Jadi jawaban: II dan IV.
         </div>
     </div>
 
@@ -149,7 +153,7 @@
             I salah (tanh ganjil).  
             II salah (sech genap).  
             III benar (cosh²x = 1 + sinh²x).  
-            IV benar (cosh genap → simetris sumbu y).  
+            IV benar (cosh genap, simetri sumbu y).  
             Jadi benar: III dan IV.
         </div>
     </div>
