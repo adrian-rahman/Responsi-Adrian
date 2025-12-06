@@ -65,7 +65,14 @@
   .option input{display:none;}
 
   /* selection highlight before submit */
-  .option.selected{outline:2px solid rgba(88,166,255,0.14); background:rgba(88,166,255,0.04)}
+/* Highlight selected option before submit */
+   .option.selected {
+     outline: 2px solid #58a6ff; /* bright blue border */
+     background: rgba(88,166,255,0.1); /* slightly brighter */
+     transform: scale(1.03); /* pop out a bit */
+     box-shadow: 0 4px 12px rgba(88,166,255,0.3);
+  }
+
 
   /* after submit: correct / wrong */
   .option.correct{
@@ -208,9 +215,13 @@ input:checked + .slider:before {
   <h1>Kuis Kalkulus</h1>
   <p class="lead">Pilih jawaban untuk setiap soal, lalu tekan <strong>Submit All</strong></p>
   <label class="switch">
-        <input type="checkbox" id="modeToggle">
-        <span class="slider"></span>
+    <input type="checkbox" id="modeToggle">
+    <span class="slider">
+        <span class="icon sun">☀️</span>
+        <span class="icon moon">🌙</span>
+    </span>
   </label>
+
 
 </header>
 
@@ -475,10 +486,6 @@ const modeToggle = document.getElementById("modeToggle");
 modeToggle.addEventListener("change", function () {
     document.body.classList.toggle("light-mode");
 });
-
-
-
-
 </script>
 </body>
 </html>
