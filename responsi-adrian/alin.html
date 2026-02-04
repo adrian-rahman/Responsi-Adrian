@@ -90,13 +90,13 @@
     zoomLevel: 1,
     
     materi: [
-      { id: 'materi1', title: '1. Bab 4.1 - 4.4', file: 'Materi1A.pdf', description: 'Sistem Persamaan Linier, Matriks, dan Operasi Matriks' },
-      { id: 'materi2', title: '2. Bab 4.5 - 4.10', file: 'Materi2A.pdf', description: 'Invers Matriks, Matriks Elementer, dan Subruang' },
-      { id: 'materi3', title: '3. Bab 5.1 - 5.2', file: 'Materi3A.pdf', description: 'Determinan: Sifat-sifat dan Metode Perhitungan' },
-      { id: 'materi4', title: '4. Bab 6.1 - 6.3', file: 'Materi4A.pdf', description: 'Ruang Vektor: Aksioma dan Subruang' },
-      { id: 'materi5', title: '5. Bab 7.1 - 7.3', file: 'Materi5A.pdf', description: 'Ruang Hasil Kali Dalam dan Proyeksi' },
-      { id: 'materi6', title: '6. Bab 8.1 - 8.3', file: 'Materi6A.pdf', description: 'Nilai Eigen dan Vektor Eigen' },
-      { id: 'materi7', title: '7. Bab 8.4 - 8.5', file: 'Materi7A.pdf', description: 'Diagonalisasi dan Aplikasi Nilai Eigen' }
+      { id: 'materi1', title: '1. Bab 4.1 - 4.4', file: 'Materi1A.pdf', description: 'Ruang Vektor, Basis' },
+      { id: 'materi2', title: '2. Bab 4.5 - 4.10', file: 'Materi2A.pdf', description: 'Dimensi, Rank, Transformasi' },
+      { id: 'materi3', title: '3. Bab 5.1 - 5.2', file: 'Materi3A.pdf', description: 'Eigen, Diagonalisasi' },
+      { id: 'materi4', title: '4. Bab 6.1 - 6.3', file: 'Materi4A.pdf', description: 'Ruang Hasil Kali Dalam, Ortogonal, Gram-Schmidt' },
+      { id: 'materi5', title: '5. Bab 7.1 - 7.3', file: 'Materi5A.pdf', description: 'Matriks Ortogonal, Diagonalisasi Ortogonal, Kuadratik' },
+      { id: 'materi6', title: '6. Bab 8.1 - 8.3', file: 'Materi6A.pdf', description: 'Transofrmasi Linear Umum, Komposisi Invers' },
+      { id: 'materi7', title: '7. Bab 8.4 - 8.5', file: 'Materi7A.pdf', description: 'Similaritas' }
     ],
     
     // Filtered materi based on search
@@ -350,17 +350,12 @@
           </div>
           
           <!-- Stats -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
-              <div class="text-2xl font-bold text-brand-600 mb-1" x-text="materi.length"></div>
-              <div class="text-sm text-slate-500">Total Materi</div>
-            </div>
-            <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
-              <div class="text-2xl font-bold text-emerald-600 mb-1">7</div>
+              <div class="text-2xl font-bold text-emerald-600 mb-1">5</div>
               <div class="text-sm text-slate-500">Bab Utama</div>
             </div>
             <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
-              <div class="text-2xl font-bold text-amber-600 mb-1">26</div>
+              <div class="text-2xl font-bold text-amber-600 mb-1">23</div>
               <div class="text-sm text-slate-500">Sub-bab</div>
             </div>
           </div>
