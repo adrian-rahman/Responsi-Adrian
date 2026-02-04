@@ -8,193 +8,664 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-          colors: { brand: { 50:'#fff1f2', 100:'#ffe4e6', 500:'#ef4444', 600:'#dc2626' } }
+          fontFamily: { 
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'] 
+          },
+          colors: { 
+            brand: { 
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              400: '#fb7185',
+              500: '#ef4444',
+              600: '#dc2626',
+              700: '#b91c1c',
+              800: '#991b1b'
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            }
+          }
         }
       }
     }
   </script>
+  
   <style>
-    .custom-scroll::-webkit-scrollbar { width: 5px; }
-    .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-    .custom-scroll::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 20px; }
-    .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #cbd5e1; }
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+    
+    [x-cloak] { display: none !important; }
+    
+    .pdf-container {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .pdf-container:hover {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 
-<body class="bg-slate-50 font-sans text-slate-800">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-slate-800 min-h-screen">
 
-  <div 
-    x-data="{
-      mobileMenuOpen: false,
-      desktopSidebarOpen: true,
-      active: null,
+<div 
+  x-data="{
+    mobileMenuOpen: false,
+    desktopSidebarOpen: true,
+    active: null,
+    searchQuery: '',
+    showDownloadModal: false,
+    downloadProgress: 0,
+    currentPage: 1,
+    totalPages: 1,
+    zoomLevel: 1,
+    
+    materi: [
+      { id: 'materi1', title: '1. Bentuk-bentuk limit tak tentu', file: 'Materi1K.pdf', description: 'Pengenalan konsep limit tak tentu dan berbagai bentuknya', duration: '45 menit', difficulty: 'Mudah' },
+      { id: 'materi2', title: '2. Integral tak wajar', file: 'Materi2K.pdf', description: 'Konsep integral tak wajar dan penerapannya', duration: '60 menit', difficulty: 'Sedang' },
+      { id: 'materi3', title: '3. Persamaan parametrik', file: 'Materi3K.pdf', description: 'Materi tentang persamaan parametrik dan grafiknya', duration: '50 menit', difficulty: 'Sedang' },
+      { id: 'materi4', title: '4. Panjang kurva dan Luas permukaan benda putar', file: 'Materi4K.pdf', description: 'Aplikasi integral untuk menghitung panjang kurva dan luas permukaan', duration: '75 menit', difficulty: 'Sulit' },
+      { id: 'materi5', title: '5. Sistem koordinat polar', file: 'Materi5K.pdf', description: 'Pengenalan sistem koordinat polar dan konversinya', duration: '40 menit', difficulty: 'Mudah' },
+      { id: 'materi6', title: '6. Grafik persamaan polar', file: 'Materi6K.pdf', description: 'Teknik menggambar grafik dalam koordinat polar', duration: '55 menit', difficulty: 'Sedang' },
+      { id: 'materi7', title: '7. Kalkulus dalam koordinat polar', file: 'Materi7K.pdf', description: 'Turunan dan integral dalam sistem koordinat polar', duration: '65 menit', difficulty: 'Sulit' },
+      { id: 'materi8', title: '8. Fungsi dua variabel atau lebih', file: 'Materi8K.pdf', description: 'Pengenalan fungsi multivariabel', duration: '50 menit', difficulty: 'Sedang' },
+      { id: 'materi9', title: '9. Turunan parsial', file: 'Materi9K.pdf', description: 'Konsep dan teknik turunan parsial', duration: '60 menit', difficulty: 'Sedang' },
+      { id: 'materi10', title: '10. Limit dan kekontinuan', file: 'Materi10K.pdf', description: 'Limit dan kekontinuan fungsi multivariabel', duration: '70 menit', difficulty: 'Sulit' },
+      { id: 'materi11', title: '11. Keterturunan', file: 'Materi11K.pdf', description: 'Syarat keterturunan fungsi multivariabel', duration: '55 menit', difficulty: 'Sedang' },
+      { id: 'materi12', title: '12. Turunan berarah dan gradien', file: 'Materi12K.pdf', description: 'Konsep turunan berarah dan vektor gradien', duration: '65 menit', difficulty: 'Sulit' },
+      { id: 'materi13', title: '13. Aturan rantai', file: 'Materi13K.pdf', description: 'Aturan rantai untuk fungsi multivariabel', duration: '60 menit', difficulty: 'Sedang' },
+      { id: 'materi14', title: '14. Bidang singgung dan aproksimasi', file: 'Materi14K.pdf', description: 'Bidang singgung dan pendekatan linear', duration: '50 menit', difficulty: 'Sedang' },
+      { id: 'materi15', title: '15. Maksimum dan minimum', file: 'Materi15K.pdf', description: 'Optimasi fungsi multivariabel', duration: '75 menit', difficulty: 'Sulit' },
+      { id: 'materi16', title: '16. Metode pengali lagrange', file: 'Materi16K.pdf', description: 'Optimasi dengan kendala menggunakan Lagrange', duration: '80 menit', difficulty: 'Sulit' },
+      { id: 'materi17', title: '17. Integral ganda dua atas daerah persegi panjang', file: 'Materi17K.pdf', description: 'Integral lipat dua pada daerah persegi panjang', duration: '60 menit', difficulty: 'Sedang' },
+      { id: 'materi18', title: '18. Integral berulang', file: 'Materi18K.pdf', description: 'Teknik integral berulang untuk integral ganda', duration: '55 menit', difficulty: 'Sedang' },
+      { id: 'materi19', title: '19. Integral ganda dua atas daerah bukan persegi panjang', file: 'Materi19K.pdf', description: 'Integral lipat dua pada daerah umum', duration: '70 menit', difficulty: 'Sulit' },
+      { id: 'materi20', title: '20. Integral ganda dua dalam koordinat polar', file: 'Materi20K.pdf', description: 'Integral ganda dalam sistem koordinat polar', duration: '65 menit', difficulty: 'Sulit' },
+      { id: 'materi21', title: '21. Luas permukaan', file: 'Materi21K.pdf', description: 'Perhitungan luas permukaan dengan integral', duration: '50 menit', difficulty: 'Sedang' },
+      { id: 'materi22', title: '22. Integral ganda tiga pada koordinat kartesian', file: 'Materi22K.pdf', description: 'Integral lipat tiga dalam koordinat kartesian', duration: '75 menit', difficulty: 'Sulit' },
+      { id: 'materi23', title: '23. Integral ganda tiga pada koordinat silinder dan bola', file: 'Materi23K.pdf', description: 'Integral lipat tiga dalam koordinat silinder dan bola', duration: '80 menit', difficulty: 'Sulit' },
+      { id: 'materi24', title: '24. Penggantian variabel', file: 'Materi24K.pdf', description: 'Teknik substitusi untuk integral multivariabel', duration: '60 menit', difficulty: 'Sedang' },
+      { id: 'materi25', title: '25. Barisan tak hingga', file: 'Materi25K.pdf', description: 'Pengenalan konsep barisan tak hingga', duration: '45 menit', difficulty: 'Mudah' },
+      { id: 'materi26', title: '26. Barisan tak hingga (lanjutan)', file: 'Materi26K.pdf', description: 'Analisis lanjutan barisan tak hingga', duration: '55 menit', difficulty: 'Sedang' }
+    ],
+    
+    // Filtered materi based on search
+    filteredMateri() {
+      if (!this.searchQuery) return this.materi;
+      const query = this.searchQuery.toLowerCase();
+      return this.materi.filter(item => 
+        item.title.toLowerCase().includes(query) || 
+        item.description.toLowerCase().includes(query)
+      );
+    },
+    
+    // Get current active materi
+    currentMateri() {
+      return this.active !== null ? this.materi[this.active] : null;
+    },
+    
+    // Navigation functions
+    nextMateri() {
+      if (this.active < this.materi.length - 1) {
+        this.active++;
+        this.scrollToTop();
+      }
+    },
+    
+    prevMateri() {
+      if (this.active > 0) {
+        this.active--;
+        this.scrollToTop();
+      }
+    },
+    
+    // Scroll to top of content
+    scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    
+    // Download simulation
+    simulateDownload() {
+      this.downloadProgress = 0;
+      const interval = setInterval(() => {
+        this.downloadProgress += 10;
+        if (this.downloadProgress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            this.showDownloadModal = false;
+            this.downloadProgress = 0;
+          }, 500);
+        }
+      }, 100);
+    },
+    
+    // Difficulty color
+    difficultyColor(level) {
+      switch(level) {
+        case 'Mudah': return 'bg-emerald-100 text-emerald-800';
+        case 'Sedang': return 'bg-amber-100 text-amber-800';
+        case 'Sulit': return 'bg-rose-100 text-rose-800';
+        default: return 'bg-slate-100 text-slate-800';
+      }
+    }
+  }"
+  class="min-h-screen flex flex-col"
+  x-cloak>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass-effect border-b border-slate-200/50 h-16 px-4 md:px-6 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-4">
+      <!-- Mobile Menu Button -->
+      <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
+        <i class="fas fa-bars text-lg"></i>
+      </button>
       
-      // PERBAIKAN DI SINI: Menggunakan Array [ ... ] agar penomoran otomatis jalan
-      materi: [
-          { id: 'materi1', title: '1. Bentuk-bentuk limit tak tentu', file: 'Materi1K.pdf' },
-          { id: 'materi2', title: '2. Integral tak wajar', file: 'Materi2K.pdf' },
-          { id: 'materi3', title: '3. Persamaan parametrik', file: 'Materi3K.pdf' },
-          { id: 'materi4', title: '4. Panjang kurva dan Luas permukaan benda putar', file: 'Materi4K.pdf' },
-          { id: 'materi5', title: '5. Sistem koordinat polar', file: 'Materi5K.pdf' },
-          { id: 'materi6', title: '6. Grafik persamaan polar', file: 'Materi6K.pdf' },
-          { id: 'materi7', title: '7. Kalkulus dalam koordinat polar', file: 'Materi7K.pdf' },
-          { id: 'materi8', title: '8. Fungsi dua variabel atau lebih', file: 'Materi8K.pdf' },
-          { id: 'materi9', title: '9. Turunan parsial', file: 'Materi9K.pdf' },
-          { id: 'materi10', title: '10. Limit dan kekontinuan', file: 'Materi10K.pdf' },
-          { id: 'materi11', title: '11. Keterturunan', file: 'Materi11K.pdf' },
-          { id: 'materi12', title: '12. Turunan berarah dan gradien', file: 'Materi12K.pdf' },
-          { id: 'materi13', title: '13. Aturan rantai', file: 'Materi13K.pdf' },
-          { id: 'materi14', title: '14. Bidang singgung dan aproksimasi', file: 'Materi14K.pdf' },
-          { id: 'materi15', title: '15. Maksimum dan minimum', file: 'Materi15K.pdf' },
-          { id: 'materi16', title: '16. Metode pengali lagrange', file: 'Materi16K.pdf' },
-          { id: 'materi17', title: '17. Integral ganda dua atas daerah persegi panjang', file: 'Materi17K.pdf' },
-          { id: 'materi18', title: '18. Integral berulang', file: 'Materi18K.pdf' },
-          { id: 'materi19', title: '19. Integral ganda dua atas daerah bukan persegi panjang', file: 'Materi19K.pdf' },
-          { id: 'materi20', title: '20. Integral ganda dua dalam koordinat polar', file: 'Materi20K.pdf' },
-          { id: 'materi21', title: '21. Luas permukaan', file: 'Materi21K.pdf' },
-          { id: 'materi22', title: '22. Integral ganda tiga pada koordinat kartesian', file: 'Materi22K.pdf' },
-          { id: 'materi23', title: '23. Integral ganda tiga pada koordinat silinder dan bola', file: 'Materi23K.pdf' },
-          { id: 'materi24', title: '24. Penggantian variabel', file: 'Materi24K.pdf' },
-          { id: 'materi25', title: '25. Barisan tak hingga', file: 'Materi25K.pdf' },
-          { id: 'materi26', title: '26. Barisan tak hingga (lanjutan)', file: 'Materi26K.pdf' }
-      ]
-    }"
-    class="min-h-screen flex flex-col">
-
-    <nav class="sticky top-0 z-50 bg-white border-b border-slate-200 h-16 px-4 md:px-6 flex items-center justify-between shadow-sm shrink-0">
-      <div class="flex items-center gap-4">
-          <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-          </button>
-          <button @click="desktopSidebarOpen = !desktopSidebarOpen" class="hidden md:flex items-center justify-center p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition">
-            <svg :class="desktopSidebarOpen ? '' : 'rotate-180'" class="transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-          </button>
-          <a href="index.html" class="font-extrabold text-xl tracking-tight flex items-center gap-1 group">
-              <span class="text-brand-600">Responsi</span> Adrian
-          </a>
+      <!-- Desktop Sidebar Toggle -->
+      <button @click="desktopSidebarOpen = !desktopSidebarOpen" class="hidden md:flex items-center justify-center p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition">
+        <i :class="desktopSidebarOpen ? 'fas fa-chevron-left' : 'fas fa-chevron-right'" class="transition-transform duration-300"></i>
+      </button>
+      
+      <!-- Logo -->
+      <a href="index.html" class="font-extrabold text-xl tracking-tight flex items-center gap-2 group">
+        <div class="w-8 h-8 bg-gradient-to-br from-brand-500 to-rose-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-brand-500/30">
+          <i class="fas fa-calculator text-sm"></i>
+        </div>
+        <span class="text-brand-600">Responsi</span> <span class="text-slate-800">Adrian</span>
+      </a>
+      
+      <!-- Breadcrumb -->
+      <div class="hidden md:flex items-center gap-2 text-sm text-slate-500 ml-4">
+        <a href="index.html" class="hover:text-brand-600 transition-colors">Beranda</a>
+        <i class="fas fa-chevron-right text-xs"></i>
+        <span class="font-semibold text-slate-700">Kalkulus 2</span>
       </div>
+    </div>
 
+    <!-- Search and Actions -->
+    <div class="flex items-center gap-3">
+      <!-- Search Bar -->
+      <div class="hidden md:flex items-center bg-white/50 border border-slate-200 rounded-lg px-3 py-1.5 w-64">
+        <i class="fas fa-search text-slate-400 text-sm mr-2"></i>
+        <input 
+          type="text" 
+          x-model="searchQuery"
+          placeholder="Cari materi..." 
+          class="bg-transparent border-0 outline-none text-sm w-full placeholder-slate-400"
+        >
+        <button x-show="searchQuery" @click="searchQuery = ''" class="ml-2 text-slate-400 hover:text-slate-600">
+          <i class="fas fa-times text-xs"></i>
+        </button>
+      </div>
+      
+      <!-- Download All Button -->
+      <button @click="showDownloadModal = true" class="hidden md:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-500 to-rose-500 text-white rounded-lg hover:shadow-lg transition-all hover:-translate-y-0.5 text-sm font-semibold">
+        <i class="fas fa-download"></i>
+        <span>Download All</span>
+      </button>
+      
+      <!-- Subject Dropdown -->
       <div x-data="{ openDropdown: false }" class="relative">
-          <button @click="openDropdown = !openDropdown" @click.outside="openDropdown = false" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs md:text-sm font-bold text-slate-700 transition">
-              <span>📚 Mata Kuliah</span>
-              <svg :class="openDropdown ? 'rotate-180' : ''" class="transition-transform w-4 h-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-          </button>
-          <div x-show="openDropdown" x-transition.origin.top.right class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden py-1 z-50">
-              <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Pilih Mapel</div>
-              <a href="#" class="flex items-center justify-between px-4 py-3 text-sm font-bold bg-brand-50 text-brand-600"><span>📐 Kalkulus 2</span><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></a>
-              <a href="alin.html" class="flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"><span>🔢 Alin 1</span></a>
-          </div>
-      </div>
-    </nav>
-
-    <div class="flex flex-1 items-start max-w-[1920px] mx-auto w-full relative">
-
-      <aside 
-        :class="[
-          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full', 
-          desktopSidebarOpen ? 'md:w-72 md:translate-x-0 md:opacity-100 md:p-6' : 'md:w-0 md:translate-x-0 md:opacity-0 md:p-0 md:overflow-hidden'
-        ]"
-        class="fixed md:sticky top-16 z-40 bg-white border-r border-slate-200 transition-all duration-300 ease-in-out flex flex-col h-[calc(100vh-4rem)] w-72 p-6 shadow-lg md:shadow-none"
-      >
-        <div class="mb-4 shrink-0 min-w-[240px]">
-          <a href="index.html" class="group flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
-            Kembali ke Beranda
+        <button @click="openDropdown = !openDropdown" @click.outside="openDropdown = false" class="flex items-center gap-2 px-3 py-2 bg-white/50 hover:bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 transition-all hover:shadow-sm">
+          <i class="fas fa-book-open text-brand-600"></i>
+          <span>Mata Kuliah</span>
+          <i :class="openDropdown ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas text-xs text-slate-400 transition-transform"></i>
+        </button>
+        
+        <div x-show="openDropdown" x-transition.origin.top.right class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden py-1 z-50">
+          <div class="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Pilih Mata Kuliah</div>
+          <a href="#" class="flex items-center justify-between px-4 py-3 text-sm font-semibold bg-brand-50 text-brand-600">
+            <span class="flex items-center gap-2"><i class="fas fa-calculator"></i> Kalkulus 2</span>
+            <i class="fas fa-check text-brand-600"></i>
+          </a>
+          <a href="alin.html" class="flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 transition">
+            <span class="flex items-center gap-2"><i class="fas fa-square-root-alt"></i> Aljabar Linear</span>
           </a>
         </div>
-        <div class="mb-4 shrink-0 min-w-[240px]">
-            <button @click="active = null; mobileMenuOpen=false" 
-                class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-bold transition border border-transparent"
-                :class="active === null ? 'bg-brand-50 text-brand-600 border-brand-100' : 'hover:bg-slate-100 text-slate-600'">
-                <span>📂</span> Lihat Semua Materi
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto custom-scroll -mr-3 pr-3 min-w-[240px]">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 sticky top-0 bg-white py-2 z-10">Daftar Isi Bab</p>
-            <nav class="space-y-1 pb-10">
-                <template x-for="(item, index) in materi" :key="index">
-                  <button 
-                      @click="active = index; mobileMenuOpen = false"
-                      class="w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition mb-1 border border-transparent truncate"
-                      :class="active === index ? 'bg-brand-50 text-brand-600 font-semibold border-brand-100' : 'hover:bg-slate-50 text-slate-600 hover:border-slate-200'"
-                      x-text="item.title"
-                      :title="item.title">
-                  </button>
-                </template>
-            </nav>
-        </div>
-        <div class="shrink-0 pt-4 mt-2 border-t border-slate-100 min-w-[240px]">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">📝 Soal</p>
-          <button class="w-full text-left px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 text-slate-600">Soal</button>
-        </div>
-      </aside>
+      </div>
+    </div>
+  </header>
 
-      <div x-show="mobileMenuOpen" @click="mobileMenuOpen=false" class="fixed inset-0 bg-black/40 z-30 md:hidden top-16"></div>
-
-      <main class="flex-1 p-6 md:p-8 w-full min-w-0">
-        
-        <div x-show="active === null" x-transition.opacity>
-            <div class="mb-8">
-              <h1 class="text-3xl font-extrabold text-slate-900">Kalkulus 2</h1>
-              <p class="text-slate-500 mt-2">Pilih topik materi di bawah ini untuk mulai belajar.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <template x-for="(item, index) in materi" :key="index">
-                    <button 
-                    @click="active = index"
-                    class="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-brand-200 transition-all flex items-center gap-4 text-left w-full">
-                    
-                    <div class="shrink-0 w-10 h-10 flex items-center justify-center bg-brand-50 text-brand-600 font-bold rounded-lg text-sm group-hover:bg-brand-600 group-hover:text-white transition-colors">
-                        <span x-text="index + 1"></span>
-                    </div>
-                    
-                    <div class="flex-1 min-w-0">
-                        <h3 class="font-bold text-slate-800 text-sm group-hover:text-brand-600 transition truncate" x-text="item.title"></h3>
-                        <p class="text-xs text-slate-400 mt-1">Klik untuk membaca</p>
-                    </div>
-                    <svg class="text-slate-300 group-hover:text-brand-500 transition shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                    </button>
-                </template>
-            </div>
-        </div>
-
-        <section x-show="active !== null" x-cloak>
-            <button @click="active = null" class="group mb-6 flex items-center gap-2 px-3 py-2 -ml-3 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-100 hover:text-brand-600 transition w-fit">
-              <svg class="group-hover:-translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-              Kembali ke Daftar Materi
-            </button>
-
-            <h2 class="text-2xl md:text-3xl font-extrabold mb-6 text-slate-900" x-text="materi[active]?.title"></h2>
-
-            <div class="relative group">
-                <div class="absolute inset-0 flex items-center justify-center bg-slate-50 rounded-2xl -z-10 h-[80vh]">
-                  <span class="text-slate-400 text-sm animate-pulse flex items-center gap-2">Memuat Dokumen...</span>
-                </div>
-                
-                <template x-if="active !== null">
-                    <iframe 
-                    :src="materi[active].file + '#toolbar=0&navpanes=0&scrollbar=0&view=FitH'"
-                    class="w-full h-[80vh] rounded-2xl border-0 shadow-xl ring-1 ring-slate-900/5 bg-white"
-                    title="PDF Viewer">
-                    </iframe>
-                </template>
-                
-                 <a :href="materi[active]?.file" target="_blank" class="absolute top-4 right-6 bg-white/90 backdrop-blur-sm hover:bg-white text-slate-700 hover:text-brand-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-slate-200 transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-200 flex items-center gap-2 z-10">
-                 <span>Buka Fullscreen</span>
-                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-               </a>
-            </div>
-        </section>
-
-      </main>
+  <!-- Mobile Search -->
+  <div x-show="searchQuery || mobileMenuOpen" class="md:hidden px-4 py-3 bg-white border-b border-slate-200">
+    <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+      <i class="fas fa-search text-slate-400 text-sm mr-2"></i>
+      <input 
+        type="text" 
+        x-model="searchQuery"
+        placeholder="Cari materi..." 
+        class="bg-transparent border-0 outline-none text-sm w-full placeholder-slate-400"
+      >
+      <button x-show="searchQuery" @click="searchQuery = ''" class="ml-2 text-slate-400 hover:text-slate-600">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
   </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-1 items-start max-w-[1920px] mx-auto w-full relative">
+    <!-- Sidebar -->
+    <aside 
+      :class="[
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full', 
+        desktopSidebarOpen ? 'md:w-80 md:translate-x-0 md:opacity-100 md:p-6' : 'md:w-0 md:translate-x-0 md:opacity-0 md:p-0 md:overflow-hidden'
+      ]"
+      class="fixed md:sticky top-0 md:top-16 z-40 bg-white border-r border-slate-200 transition-all duration-300 ease-in-out flex flex-col h-screen w-80 p-6 shadow-xl md:shadow-none glass-effect"
+    >
+      <!-- Back to Home -->
+      <div class="mb-6 shrink-0">
+        <a href="index.html" class="group flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-brand-600 transition-colors">
+          <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+          Kembali ke Beranda
+        </a>
+      </div>
+      
+      <!-- View All Button -->
+      <div class="mb-6 shrink-0">
+        <button @click="active = null; mobileMenuOpen=false" 
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border"
+          :class="active === null ? 'bg-gradient-to-r from-brand-50 to-rose-50 text-brand-600 border-brand-100 shadow-sm' : 'hover:bg-slate-100 text-slate-600 border-slate-200 hover:border-slate-300'">
+          <i class="fas fa-layer-group"></i>
+          <span>Lihat Semua Materi</span>
+        </button>
+      </div>
+      
+      <!-- Search in Sidebar -->
+      <div class="mb-4">
+        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+          <i class="fas fa-search text-slate-400 text-sm mr-2"></i>
+          <input 
+            type="text" 
+            x-model="searchQuery"
+            placeholder="Cari di sini..." 
+            class="bg-transparent border-0 outline-none text-sm w-full placeholder-slate-400"
+          >
+        </div>
+      </div>
+      
+      <!-- Content List -->
+      <div class="flex-1 overflow-y-auto custom-scroll -mr-3 pr-3">
+        <div class="flex items-center justify-between mb-3 sticky top-0 bg-white py-2 z-10">
+          <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Daftar Materi</p>
+          <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-1 rounded-full" x-text="filteredMateri.length + ' materi'"></span>
+        </div>
+        
+        <nav class="space-y-1 pb-10">
+          <template x-for="(item, index) in filteredMateri" :key="index">
+            <button 
+              @click="active = index; mobileMenuOpen = false"
+              class="w-full text-left px-4 py-3 rounded-xl text-sm transition-all mb-1 border group"
+              :class="active === index ? 
+                'bg-gradient-to-r from-brand-500 to-rose-500 text-white border-transparent shadow-lg' : 
+                'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:shadow-sm'"
+              :title="item.title">
+              
+              <div class="flex items-center justify-between mb-1">
+                <span class="font-semibold truncate" x-text="item.title"></span>
+                <span x-show="active !== index" class="text-xs font-medium px-2 py-0.5 rounded-full" 
+                      :class="difficultyColor(item.difficulty)" 
+                      x-text="item.difficulty"></span>
+                <i x-show="active === index" class="fas fa-check text-white"></i>
+              </div>
+              
+              <div class="flex items-center justify-between text-xs" :class="active === index ? 'text-white/80' : 'text-slate-500'">
+                <span x-text="item.duration"></span>
+                <span class="flex items-center gap-1">
+                  <i class="far fa-file-pdf"></i>
+                  PDF
+                </span>
+              </div>
+            </button>
+          </template>
+          
+          <div x-show="filteredMateri.length === 0" class="text-center py-8">
+            <i class="fas fa-search text-slate-300 text-3xl mb-3"></i>
+            <p class="text-sm text-slate-500">Materi tidak ditemukan</p>
+            <p class="text-xs text-slate-400 mt-1">Coba kata kunci lain</p>
+          </div>
+        </nav>
+      </div>
+      
+      <!-- Footer Sidebar -->
+      <div class="shrink-0 pt-4 mt-2 border-t border-slate-100">
+        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">📚 Latihan Soal</p>
+        <div class="space-y-2">
+          <button class="w-full text-left px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 text-slate-600 transition flex items-center gap-2">
+            <i class="fas fa-file-alt text-brand-600"></i>
+            <span>Bank Soal Kalkulus 2</span>
+          </button>
+          <button class="w-full text-left px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 text-slate-600 transition flex items-center gap-2">
+            <i class="fas fa-chart-line text-brand-600"></i>
+            <span>Quiz Interaktif</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Overlay -->
+    <div x-show="mobileMenuOpen" @click="mobileMenuOpen=false" class="fixed inset-0 bg-black/40 z-30 md:hidden"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-6 lg:p-8 w-full min-w-0 max-w-full overflow-x-hidden">
+      
+      <!-- All Materials View -->
+      <div x-show="active === null" x-transition.opacity class="animate-fade-in">
+        <div class="mb-8">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">Kalkulus 2</h1>
+              <p class="text-slate-500 text-lg">Pilih topik materi di bawah untuk mulai belajar.</p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <div class="hidden md:flex items-center gap-2 text-sm text-slate-600 bg-white/50 border border-slate-200 rounded-lg px-3 py-2">
+                <i class="fas fa-filter text-brand-600"></i>
+                <span>Filter:</span>
+                <select class="bg-transparent border-0 outline-none text-sm">
+                  <option>Semua Tingkat</option>
+                  <option>Mudah</option>
+                  <option>Sedang</option>
+                  <option>Sulit</option>
+                </select>
+              </div>
+              
+              <button @click="showDownloadModal = true" class="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-500 to-rose-500 text-white rounded-xl hover:shadow-lg transition-all hover:-translate-y-0.5 text-sm font-semibold shadow-md">
+                <i class="fas fa-download"></i>
+                <span class="hidden sm:inline">Download All</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Stats -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold text-brand-600 mb-1" x-text="materi.length"></div>
+              <div class="text-sm text-slate-500">Total Materi</div>
+            </div>
+            <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold text-emerald-600 mb-1">8</div>
+              <div class="text-sm text-slate-500">Materi Mudah</div>
+            </div>
+            <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold text-amber-600 mb-1">10</div>
+              <div class="text-sm text-slate-500">Materi Sedang</div>
+            </div>
+            <div class="bg-white/70 backdrop-blur-sm border border-slate-200 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold text-rose-600 mb-1">8</div>
+              <div class="text-sm text-slate-500">Materi Sulit</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Materials Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <template x-for="(item, index) in filteredMateri" :key="index">
+            <button 
+              @click="active = index"
+              class="group bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-200 transition-all duration-300 text-left w-full h-full flex flex-col animate-slide-up"
+              :style="`animation-delay: ${index * 50}ms`">
+              
+              <div class="flex items-start justify-between mb-4">
+                <div class="shrink-0 w-12 h-12 flex items-center justify-center bg-gradient-to-br from-brand-500 to-rose-500 text-white font-bold rounded-xl text-lg group-hover:scale-110 transition-transform">
+                  <span x-text="index + 1"></span>
+                </div>
+                <span class="text-xs font-semibold px-3 py-1 rounded-full" 
+                      :class="difficultyColor(item.difficulty)" 
+                      x-text="item.difficulty"></span>
+              </div>
+              
+              <h3 class="font-bold text-slate-800 text-lg mb-2 group-hover:text-brand-600 transition-colors line-clamp-2" x-text="item.title"></h3>
+              <p class="text-sm text-slate-500 mb-4 flex-1" x-text="item.description"></p>
+              
+              <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-100">
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                  <i class="far fa-clock"></i>
+                  <span x-text="item.duration"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-slate-400 group-hover:text-brand-500 transition-colors">Baca selengkapnya</span>
+                  <i class="fas fa-arrow-right text-slate-300 group-hover:text-brand-500 transition-colors group-hover:translate-x-1"></i>
+                </div>
+              </div>
+            </button>
+          </template>
+          
+          <div x-show="filteredMateri.length === 0" class="col-span-full text-center py-12">
+            <div class="w-20 h-20 mx-auto mb-4 flex items-center justify-center bg-slate-100 rounded-full">
+              <i class="fas fa-search text-slate-300 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-700 mb-2">Materi tidak ditemukan</h3>
+            <p class="text-slate-500 max-w-md mx-auto">Coba gunakan kata kunci lain atau hapus filter pencarian.</p>
+            <button @click="searchQuery = ''" class="mt-4 px-4 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors text-sm font-semibold">
+              Tampilkan Semua Materi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Single Material View -->
+      <section x-show="active !== null" x-cloak class="animate-fade-in">
+        <!-- Navigation -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <button @click="active = null" class="group flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-brand-600 transition w-fit border border-slate-200 hover:border-slate-300">
+            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+            Kembali ke Daftar Materi
+          </button>
+          
+          <div class="flex items-center gap-3">
+            <button @click="prevMateri" :disabled="active === 0" 
+              class="px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 border"
+              :class="active === 0 ? 
+                'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 
+                'bg-white text-slate-700 border-slate-200 hover:border-brand-200 hover:text-brand-600 hover:shadow-sm'">
+              <i class="fas fa-chevron-left"></i>
+              <span class="hidden sm:inline">Sebelumnya</span>
+            </button>
+            
+            <div class="text-center">
+              <span class="text-sm font-bold text-slate-700" x-text="active + 1"></span>
+              <span class="text-sm text-slate-400"> / </span>
+              <span class="text-sm text-slate-500" x-text="materi.length"></span>
+            </div>
+            
+            <button @click="nextMateri" :disabled="active === materi.length - 1" 
+              class="px-4 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2 border"
+              :class="active === materi.length - 1 ? 
+                'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 
+                'bg-white text-slate-700 border-slate-200 hover:border-brand-200 hover:text-brand-600 hover:shadow-sm'">
+              <span class="hidden sm:inline">Selanjutnya</span>
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Material Header -->
+        <div class="mb-8">
+          <h2 class="text-3xl md:text-4xl font-extrabold mb-4 text-slate-900" x-text="currentMateri?.title"></h2>
+          
+          <div class="flex flex-wrap items-center gap-4 mb-6">
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg">
+              <i class="far fa-clock text-brand-600"></i>
+              <span class="text-sm font-medium text-slate-700" x-text="currentMateri?.duration"></span>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg">
+              <i class="fas fa-chart-line text-brand-600"></i>
+              <span class="text-sm font-medium text-slate-700" x-text="currentMateri?.difficulty"></span>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg">
+              <i class="far fa-file-pdf text-brand-600"></i>
+              <span class="text-sm font-medium text-slate-700">PDF Document</span>
+            </div>
+          </div>
+          
+          <p class="text-lg text-slate-600 max-w-3xl" x-text="currentMateri?.description"></p>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div class="relative group mb-8">
+          <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl -z-10 h-[75vh] animate-pulse-slow">
+            <div class="text-center">
+              <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-white rounded-2xl shadow-sm">
+                <i class="fas fa-file-pdf text-brand-500 text-2xl"></i>
+              </div>
+              <span class="text-slate-500 text-sm flex items-center gap-2">
+                <i class="fas fa-spinner fa-spin"></i>
+                Memuat dokumen...
+              </span>
+            </div>
+          </div>
+          
+          <div class="pdf-container">
+            <iframe 
+              :src="currentMateri?.file + '#toolbar=0&navpanes=0&scrollbar=0&view=FitH'"
+              class="w-full h-[75vh] rounded-3xl border-0 shadow-xl ring-1 ring-slate-900/5 bg-white"
+              title="PDF Viewer">
+            </iframe>
+          </div>
+          
+          <!-- PDF Controls -->
+          <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg border border-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <a :href="currentMateri?.file" target="_blank" class="flex items-center gap-2 px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg text-xs font-semibold transition-colors">
+              <i class="fas fa-external-link-alt"></i>
+              Buka di Tab Baru
+            </a>
+            <a :href="currentMateri?.file" download class="flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-semibold transition-colors border border-slate-200">
+              <i class="fas fa-download"></i>
+              Download
+            </a>
+          </div>
+        </div>
+
+        <!-- Additional Resources -->
+        <div class="mt-12 pt-8 border-t border-slate-200">
+          <h3 class="text-xl font-bold text-slate-800 mb-6">📚 Materi Terkait</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div x-show="active > 0">
+              <a @click="prevMateri" class="block p-4 bg-slate-50 hover:bg-white rounded-xl border border-slate-200 hover:border-brand-200 transition-all cursor-pointer group">
+                <div class="flex items-center gap-3">
+                  <div class="shrink-0 w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-600 rounded-lg group-hover:bg-brand-50 group-hover:text-brand-600">
+                    <i class="fas fa-chevron-left"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Sebelumnya</p>
+                    <p class="font-medium text-slate-700 group-hover:text-brand-600" x-text="active > 0 ? materi[active-1].title : ''"></p>
+                  </div>
+                </div>
+              </a>
+            </div>
+            
+            <div x-show="active < materi.length - 1">
+              <a @click="nextMateri" class="block p-4 bg-slate-50 hover:bg-white rounded-xl border border-slate-200 hover:border-brand-200 transition-all cursor-pointer group">
+                <div class="flex items-center gap-3">
+                  <div>
+                    <p class="text-xs text-slate-500 mb-1">Selanjutnya</p>
+                    <p class="font-medium text-slate-700 group-hover:text-brand-600" x-text="active < materi.length - 1 ? materi[active+1].title : ''"></p>
+                  </div>
+                  <div class="shrink-0 w-10 h-10 flex items-center justify-center bg-slate-100 text-slate-600 rounded-lg group-hover:bg-brand-50 group-hover:text-brand-600 ml-auto">
+                    <i class="fas fa-chevron-right"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Download Modal -->
+  <div x-show="showDownloadModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+    <div @click.away="showDownloadModal = false" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-slate-900">Download Semua Materi</h3>
+        <button @click="showDownloadModal = false" class="text-slate-400 hover:text-slate-600">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <p class="text-slate-600 mb-6">Anda akan mendownload semua materi Kalkulus 2 dalam format ZIP (sekitar 45MB).</p>
+      
+      <!-- Progress Bar -->
+      <div x-show="downloadProgress > 0" class="mb-6">
+        <div class="flex justify-between text-sm text-slate-600 mb-2">
+          <span>Mengunduh...</span>
+          <span x-text="downloadProgress + '%'"></span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2">
+          <div class="bg-gradient-to-r from-brand-500 to-rose-500 h-2 rounded-full transition-all duration-300" 
+               :style="'width: ' + downloadProgress + '%'"></div>
+        </div>
+      </div>
+      
+      <div class="flex gap-3">
+        <button @click="showDownloadModal = false" class="flex-1 px-4 py-3 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors font-medium">
+          Batal
+        </button>
+        <button @click="simulateDownload()" class="flex-1 px-4 py-3 bg-gradient-to-r from-brand-500 to-rose-500 text-white rounded-xl hover:shadow-lg transition-all font-semibold">
+          <i class="fas fa-download mr-2"></i>
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white/70 backdrop-blur-sm border-t border-slate-200/50 py-6 px-6 mt-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 bg-gradient-to-br from-brand-500 to-rose-600 rounded-md flex items-center justify-center text-white text-xs font-bold">
+            <i class="fas fa-calculator"></i>
+          </div>
+          <span class="font-bold text-slate-800">Responsi<span class="text-brand-600">Adrian</span></span>
+        </div>
+        
+        <div class="text-sm text-slate-500 text-center">
+          © 2026 - Materi Belajar Kalkulus 2 FMIPA UI
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-slate-400 hover:text-brand-600 transition-colors">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="text-slate-400 hover:text-brand-600 transition-colors">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="https://wa.me/628111522096" target="_blank" class="text-slate-400 hover:text-brand-600 transition-colors">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
 </body>
 </html>
